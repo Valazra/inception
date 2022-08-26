@@ -5,4 +5,10 @@ RUN apt-get -y install php7.3 php-mysqli php-fpm wget sendmail
 
 EXPOSE 9000
 
+COPY ./wordpress.sh /var/www/
+
+RUN chmod +x /var/www/wordpress.sh
+
+ENTRYPOINT ["/var/www/wordpress.sh"]
+
 CMD ["/usr/sbin/php-fpm7.3", "--nodaemonize"]
