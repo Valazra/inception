@@ -1,60 +1,39 @@
-version: "3.5"
-
-networks:
- app-network:
-  name: app-network
-  driver: bridge
-
-volumes:
- wp:
-  driver: local
-  name: wp
-  driver_opts:
-   type: none
-   o: bind
-   device: /home/vazra/data/wordpress
- db:
-  driver: local
-  name: db
-  driver_opts:
-   type: none
-   o: bind
-   device: /home/vazra/data/mariadb
-
 services:
- mariadb:
-  container_name: mariadb
-  build: ./requirements/mariadb
-  env_file:
-   - .env
+ mysql:
+  image: mariadb:latest
+  ports:
+   - '3306:3306'
+#  build: ./requirements/mariadb
   volumes:
-   - db:/var/lib/mysql
-  networks:
-   - app-network
-  restart: unless-stopped
+   - ./requirements/db-data:/var/lib/mysql
+  environment:
+   - MYSQL_ROOT_PASSWORD=mdp123
+  restart: always
 
  wordpress:
-  container_name: wordpress
-  build: ./requirements/wordpress
-  env_file:
-   - .env
-  depends_on:
-   - mariadb
+  image: wordpress:4.7.1-php7.0-fpm
+#  build: ./requirements/wordpress
+  ports:
+   - '9000:9000'
   volumes:
-   - wp:/var/www/html
-  networks:
-   - app-network
-  restart: unless-stopped
+   - ./requirements/wordpress:/var/www/html
+  environment:
+   - WORDPRESS_DB_NAME=wpdb
+   - WORDPRESS_TABLE_PREFIX=wp_
+   - WORDPRESS_DB_HOST=mysql
+   - WORDPRESS_DB_PASSWORD=mdp123
+  links:
+   - mysql
+  restart: always
 
  nginx:
-  container_name: nginx
-  build: ./requirements/nginx
+  image: nginx:latest
   ports:
-   - "443:443"
-  depends_on:
-   - wordpress
+    - '80:80'
   volumes:
-   - wp:/var/www/html
-  networks:
-   - app-network
-  restart: unless-stopped
+   - ./requirements/nginx:/etc/nginx/conf.d
+   - ./requirements/logs/nginx:/var/log/nginx
+   - ./requirements/wordpress:/var/www/html
+  links:
+   - wordpress
+  restart: always
