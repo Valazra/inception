@@ -1,18 +1,16 @@
 services:
- mysql:
+ mariadb:
   image: mariadb:latest
   ports:
    - '3306:3306'
-#  build: ./requirements/mariadb
   volumes:
-   - ./requirements/db-data:/var/lib/mysql
+   - ./requirements/mariadb:/var/lib/mysql
   environment:
    - MYSQL_ROOT_PASSWORD=mdp123
   restart: always
 
  wordpress:
   image: wordpress:4.7.1-php7.0-fpm
-#  build: ./requirements/wordpress
   ports:
    - '9000:9000'
   volumes:
@@ -20,10 +18,10 @@ services:
   environment:
    - WORDPRESS_DB_NAME=wpdb
    - WORDPRESS_TABLE_PREFIX=wp_
-   - WORDPRESS_DB_HOST=mysql
+   - WORDPRESS_DB_HOST=mariadb
    - WORDPRESS_DB_PASSWORD=mdp123
   links:
-   - mysql
+   - mariadb
   restart: always
 
  nginx:
