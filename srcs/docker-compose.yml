@@ -10,28 +10,68 @@ services:
   restart: always
 
  wordpress:
-  image: wordpress:4.7.1-php7.0-fpm
+  image: wordpress
+  build:
+   context: requirements/wordpress
   ports:
    - '9000:9000'
-  volumes:
-   - ./requirements/wordpress:/var/www/html
-  environment:
-   - WORDPRESS_DB_NAME=wpdb
-   - WORDPRESS_TABLE_PREFIX=wp_
-   - WORDPRESS_DB_HOST=mariadb
-   - WORDPRESS_DB_PASSWORD=mdp123
-  links:
+  expose:
+   - "9000"
+  networks:
+   inception_network:
+    ipv4_address: 172.22.0.3
+  depends_on:
    - mariadb
+  volumes:
+   - wordpress_volume:/var/www/html
+  environment:
+   - DB_NAME=${DB_NAME}
+   - DB_USER=${DB_USER}
+   - DB_HOST=${DB_HOST}
+   - DB_CHARSET=${DB_CHARSET}
+   - AUTH_KEY=${AUTH_KEY}
+   - SECURE_AUTH_KEY=${SECURE_AUTH_KEY}
+   - LOGGED_IN_KEY=${LOGGED_IN_KEY}
+   - NONCE_KEY=${NONCE_KEY}
+   - AUTH_SALT=${AUTH_SALT}
+   - SECURE_AUTH_SALT=${SECURE_AUTH_SALT}
+   - LOGGED_IN_SALT=${LOGGED_IN_SALT}
+   - NONCE_SALT=${NONCE_SALT}
+   - DB_PASSWORD=${DB_PASSWORD}
   restart: always
 
  nginx:
-  image: nginx:latest
+  image: nginx
+  build: ./requirements/nginx
+  depends_on:
+    - wordpress
   ports:
-    - '80:80'
-  volumes:
-   - ./requirements/nginx:/etc/nginx/conf.d
-   - ./requirements/logs/nginx:/var/log/nginx
-   - ./requirements/wordpress:/var/www/html
-  links:
-   - wordpress
+    - '443:443'
+  networks:
+    - inception_network
+    - outside_network
   restart: always
+
+networks:
+ inception_network:
+  ipam:
+   config:
+    - subnet: "172.22.0.0/24"
+  internal: true
+ outside_network:
+  internal: false
+
+volumes:
+ wordpress_volume:
+  driver: local
+  driver_opts:
+   type: 'none'
+   o: 'bind'
+   device: '/home/user42/data/wordpress'
+ mysql_volume:
+  driver: local
+  driver_opts:
+   type: 'none'
+   o: 'bind'
+   device: '/home/user42/data/mysql'
+

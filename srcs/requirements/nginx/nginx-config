@@ -1,0 +1,21 @@
+server {
+
+	listen 443 ssl;
+	listen [::]:443 ssl;
+
+	server_name vazra.42.fr;
+
+	ssl_certificate /etc/nginx/ssl/vazra.42.fr.pem;
+	ssl_certificate_key /etc/nginx/ssl/vazra.42.fr.key;
+	ssl_protocols TLSv1.2 TLSv1.3;
+
+	location / {
+		proxy_pass http://172.22.0.3:9000/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+		add_header 'Content-Security-Policy' 'upgrade-insecure-requests';
+	}
+}

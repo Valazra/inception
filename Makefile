@@ -1,5 +1,7 @@
 all:
-	docker-compose -f ./srcs/docker-compose.yml up
+	mkdir -p /home/user42/data/mysql
+	mkdir -p /home/user42/data/wordpress
+	docker-compose -f ./srcs/docker-compose.yml up -d
 
 down:
 	docker-compose -f ./srcs/docker-compose.yml down
