@@ -1,12 +1,23 @@
+version: '3'
+
 services:
  mariadb:
-  image: mariadb:latest
+  image: mariadb
+  build:
+   context: requirements/mariadb
+   args:
+    - DB_USER_PASS=${DB_USER_PASS}
+    - DB_ROOT_PASS=${DB_ROOT_PASS}
+    - HASHED_PASS=${HASHED_PASS}
   ports:
    - '3306:3306'
+  expose:
+   - "3306"
+  networks:
+   inception_network:
+    ipv4_address: 172.22.0.4
   volumes:
-   - ./requirements/mariadb:/var/lib/mysql
-  environment:
-   - MYSQL_ROOT_PASSWORD=mdp123
+   - mysql_volume:/var/lib/mysql
   restart: always
 
  wordpress:
