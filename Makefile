@@ -10,6 +10,9 @@ ${NAME}:
 	@sudo mkdir -p /home/vazra/data/mariadb
 	${COMPOSE} ${PATH_COMPOSE} up -d --build
 
+stop:
+	${COMPOSE} ${PATH_COMPOSE} stop
+
 down:
 	${COMPOSE} ${PATH_COMPOSE} down
 
