@@ -10,13 +10,7 @@ ${NAME}:
 	@sudo mkdir -p /home/vazra/data/mariadb
 	${COMPOSE} ${PATH_COMPOSE} up -d --build
 
-start:
-	${COMPOSE} ${PATH_COMPOSE} start
-
-stop:
-	${COMPOSE} ${PATH_COMPOSE} stop
-
-clean:
+down:
 	${COMPOSE} ${PATH_COMPOSE} down
 
-.PHONY: all start restart stop clean fclean
+.PHONY: all down
