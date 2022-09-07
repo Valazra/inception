@@ -1,88 +1,62 @@
-version: '3'
+version: "3"
 
 services:
- mariadb:
-  image: mariadb
-  build:
-   context: requirements/mariadb
-   args:
-    - DB_USER_PASS=${DB_USER_PASS}
-    - DB_ROOT_PASS=${DB_ROOT_PASS}
-    - HASHED_PASS=${HASHED_PASS}
-  ports:
-   - '3306:3306'
-  expose:
-   - "3306"
-  networks:
-   inception_network:
-    ipv4_address: 172.22.0.4
-  volumes:
-   - mysql_volume:/var/lib/mysql
-  restart: always
+  nginx:
+    container_name: nginx
+    build: requirements/nginx
+    image: nginx
+    ports:
+      - 443:443
+    depends_on:
+      - wordpress
+    volumes:
+      - "wordpress-volume:/var/www/html/wordpress"
+    networks:
+      - inception
+    restart: unless-stopped
 
- wordpress:
-  image: wordpress
-  build:
-   context: requirements/wordpress
-  ports:
-   - '9000:9000'
-  expose:
-   - "9000"
-  networks:
-   inception_network:
-    ipv4_address: 172.22.0.3
-  depends_on:
-   - mariadb
-  volumes:
-   - wordpress_volume:/var/www/html
-  environment:
-   - DB_NAME=${DB_NAME}
-   - DB_USER=${DB_USER}
-   - DB_HOST=${DB_HOST}
-   - DB_CHARSET=${DB_CHARSET}
-   - AUTH_KEY=${AUTH_KEY}
-   - SECURE_AUTH_KEY=${SECURE_AUTH_KEY}
-   - LOGGED_IN_KEY=${LOGGED_IN_KEY}
-   - NONCE_KEY=${NONCE_KEY}
-   - AUTH_SALT=${AUTH_SALT}
-   - SECURE_AUTH_SALT=${SECURE_AUTH_SALT}
-   - LOGGED_IN_SALT=${LOGGED_IN_SALT}
-   - NONCE_SALT=${NONCE_SALT}
-   - DB_PASSWORD=${DB_PASSWORD}
-  restart: always
-
- nginx:
-  image: nginx
-  build: ./requirements/nginx
-  depends_on:
-    - wordpress
-  ports:
-    - '443:443'
-  networks:
-    - inception_network
-    - outside_network
-  restart: always
+  wordpress:
+    container_name: wordpress
+    build: requirements/wordpress
+    image: wordpress
+    env_file: .env
+    ports:
+      - 127.0.0.1:9000:9000
+    depends_on:
+      - mariadb
+    volumes:
+      - "wordpress-volume:/var/www/html/wordpress"
+    networks:
+      - inception
+    restart: unless-stopped
+  
+  mariadb:
+    container_name: mariadb
+    build: requirements/mariadb
+    image: mariadb
+    env_file: .env
+    ports:
+      - 127.0.0.1:3306:3306
+    volumes:
+      - "mariadb-volume:/var/lib/mysql"
+    networks:
+      - inception
+    restart: unless-stopped
 
 networks:
- inception_network:
-  ipam:
-   config:
-    - subnet: "172.22.0.0/24"
-  internal: true
- outside_network:
-  internal: false
+  inception:
+    driver: bridge
 
 volumes:
- wordpress_volume:
-  driver: local
-  driver_opts:
-   type: 'none'
-   o: 'bind'
-   device: '/home/user42/data/wordpress'
- mysql_volume:
-  driver: local
-  driver_opts:
-   type: 'none'
-   o: 'bind'
-   device: '/home/user42/data/mysql'
-
+  wordpress-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/vazra/data/wordpress
+  mariadb-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/vazra/data/mariadb

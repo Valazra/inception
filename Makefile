@@ -1,19 +1,22 @@
-all:
-	mkdir -p /home/user42/data/mysql
-	mkdir -p /home/user42/data/wordpress
-	docker-compose -f ./srcs/docker-compose.yml up -d --build
+NAME		= inception
+COMPOSE		= docker-compose
+PATH_COMPOSE	= -f srcs/docker-compose.yml
 
-down:
-	docker-compose -f ./srcs/docker-compose.yml down
+all: ${NAME}
 
-re:
-	docker-compose -f ./srcs/docker-compose.yml up --build
+${NAME}:
+	@cat /etc/hosts | if ! grep -P "127.0.0.1\tvazra.42.fr"; then sudo sh -c 'echo "127.0.0.1\tvazra.42.fr" >> /etc/hosts'; fi
+	@sudo mkdir -p /home/vazra/data/wordpress
+	@sudo mkdir -p /home/vazra/data/mariadb
+	${COMPOSE} ${PATH_COMPOSE} up -d --build
+
+start:
+	${COMPOSE} ${PATH_COMPOSE} start
+
+stop:
+	${COMPOSE} ${PATH_COMPOSE} stop
 
 clean:
-	docker stop $$(docker ps -qa); \
-	docker rm $$(docker ps -qa); \
-	docker rmi -f $$(docker images -qa); \
-	docker volume rm $$(docker volume ls -q); \
-	docker network rm $$(docker network ls -q);
+	${COMPOSE} ${PATH_COMPOSE} down
 
-.PHONY: all re down clean
+.PHONY: all start restart stop clean fclean

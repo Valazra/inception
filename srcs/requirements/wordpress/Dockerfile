@@ -1,19 +1,22 @@
 FROM debian:buster
 
-RUN apt update -y
-RUN apt install php-fpm php-mysql zip wget -y
+RUN apt-get -y update
+RUN apt-get -y install wget
+RUN apt-get -y install mariadb-client
+RUN apt-get -y install php7.3-fpm php7.3-common php7.3-mysql
+RUN apt-get -y install procps
 
-COPY . /app
-WORKDIR /app
+COPY conf/www.conf /etc/php/7.3/fpm/pool.d/
+COPY conf/start.sh /tmp/
 
-RUN chmod 777 -R /app
-RUN cd /tmp
-RUN wget http://wordpress.org/latest.zip
-RUN mkdir -p /var/www/html
-RUN unzip latest.zip -d /var/www/html
-RUN chmod -R 777 /app
-RUN cat /app/wp-config.php > /var/www/html/wordpress/wp-config.php
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar
+RUN cp wp-cli.phar /usr/bin/wp
 
-RUN /etc/init.d/php7.3-fpm start
+RUN mkdir -p /var/run/php/
 
-CMD php -S 0.0.0.0:9000 -t /var/www/html/wordpress
+WORKDIR /var/www/html/wordpress
+
+ENTRYPOINT ["bash", "/tmp/start.sh"]
+
+CMD ["php-fpm7.3", "-F", "-R"]
