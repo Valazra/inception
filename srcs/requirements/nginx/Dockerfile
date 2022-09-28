@@ -3,7 +3,6 @@ FROM debian:buster
 RUN apt-get -y update
 RUN apt-get -y install nginx
 RUN apt-get -y install openssl
-RUN apt-get -y install procps
 
 COPY conf/nginx.conf /etc/nginx/sites-enabled/
 
