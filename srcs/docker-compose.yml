@@ -6,7 +6,7 @@ services:
     build: requirements/nginx
     image: nginx
     ports:
-      - 443:443
+      - 127.0.0.1:443:443
     depends_on:
       - wordpress
     volumes:

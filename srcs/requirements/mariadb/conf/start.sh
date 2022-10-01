@@ -1,17 +1,13 @@
 #!/bin/bash
 
-if [ ! -d /var/lib/mysql/wordpress ]; then
-	mysqld&
-	until mysqladmin ping; do
-		sleep 1
-	done
-	echo "create database if not exists wordpress;" | mysql -u root
-	echo "create user if not exists '$LOGIN' identified by '$PASSWORD';" | mysql -u root
-	echo "grant usage on wordpress.* TO '$LOGIN'@'%' identified by '$PASSWORD';" | mysql -u root
-	echo "grant all privileges on wordpress.* TO '$LOGIN'@'%' identified by '$PASSWORD';" | mysql -u root
-	echo "flush privileges;" | mysql -u root
-	echo "alter user 'root'@'localhost' identified by '$PASSWORD';" | mysql -u root
-	killall mysqld
-fi
+service mysql start;
 
-exec "$@"
+mysql -e "CREATE DATABASE IF NOT EXISTS 'wordpress';"
+mysql -e "CREATE USER IF NOT EXISTS '$LOGIN' IDENTIFIED BY '$PASSWORD';"
+mysql -e "GRANT ALL PRIVILEGES ON 'wordpress'.* TO '$LOGIN'@'%' IDENTIFIED BY '$PASSWORD';"
+mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$PASSWORD';"
+mysql -e "FLUSH PRIVILEGES;"
+
+mysqladmin -u root -p$PASSWORD shutdown
+
+exec mysqld_safe
