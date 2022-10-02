@@ -6,7 +6,7 @@ RUN apt-get -y install php7.3-fpm php7.3-common php7.3-mysql
 
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 RUN chmod +x wp-cli.phar
-RUN cp wp-cli.phar /usr/bin/wp
+RUN mv wp-cli.phar /usr/bin/wp
 RUN mkdir -p /var/run/php/
 
 COPY conf/www.conf /etc/php/7.3/fpm/pool.d/
