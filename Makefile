@@ -13,7 +13,16 @@ ${NAME}:
 stop:
 	${COMPOSE} ${PATH_COMPOSE} stop
 
-down:
+down:	stop
 	${COMPOSE} ${PATH_COMPOSE} down
+
+fclean:	down
+	rm -rf /home/vazra/
+	docker system prune -af
+	docker volume rm srcs_mariadb-volume
+	docker volume rm srcs_wordpress-volume
+	service nginx stop
+	service mysql stop
+
 
 .PHONY: all down
