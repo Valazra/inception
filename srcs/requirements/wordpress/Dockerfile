@@ -3,6 +3,7 @@ FROM debian:buster
 RUN apt-get -y update
 RUN apt-get -y upgrade
 RUN apt-get -y install wget
+RUN apt-get -y install mariadb-client
 RUN apt-get -y install php7.3 php-fpm php-mysql
 
 RUN wget https://wordpress.org/wordpress-6.0.tar.gz -P /var/www
