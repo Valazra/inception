@@ -21,7 +21,6 @@ fclean:	down
 	docker system prune -af
 	docker volume rm srcs_mariadb-volume
 	docker volume rm srcs_wordpress-volume
-	service nginx stop
 	service mysql stop
 
 
