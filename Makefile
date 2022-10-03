@@ -23,5 +23,4 @@ fclean:	down
 	docker volume rm srcs_wordpress-volume
 	service mysql stop
 
-
 .PHONY: all down
