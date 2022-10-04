@@ -1,5 +1,5 @@
 NAME		= inception
-COMPOSE		= docker-compose
+COMPOSE		= docker compose #sur la VM de l'ecole on a mis un plugin donc pas besoin du tiret. Pour la VM sur mon PC il faut mettre un tiret entre docker et compose
 PATH_COMPOSE	= -f srcs/docker-compose.yml
 
 all: ${NAME}
@@ -18,9 +18,8 @@ down:	stop
 
 fclean:	down
 	rm -rf /home/vazra/
-	docker system prune -af
 	docker volume rm srcs_mariadb-volume
 	docker volume rm srcs_wordpress-volume
-	service mysql stop
+	docker system prune -af
 
 .PHONY: all stop down fclean
