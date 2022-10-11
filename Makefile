@@ -1,5 +1,5 @@
 NAME		= inception
-COMPOSE		= docker compose #sur la VM de l'ecole on a mis un plugin donc pas besoin du tiret. Pour la VM sur mon PC il faut mettre un tiret entre docker et compose
+COMPOSE		= docker compose
 PATH_COMPOSE	= -f srcs/docker-compose.yml
 
 all: ${NAME}

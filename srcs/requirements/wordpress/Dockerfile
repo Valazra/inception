@@ -17,7 +17,7 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
 
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
-#soit mv soit cp /// soit /usr/bin/wp  soit /usr/local/bin/wp
+
 COPY conf/start.sh start.sh
 
 ENTRYPOINT ["bash", "start.sh"]
